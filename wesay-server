@@ -14,7 +14,8 @@ function do_msg {
 	let -i now=$(get_time);
 	
 	txt="${*:2}";
-
+	echo ">>> $ts, $now, $txt"
+	echo $(( $ts <= $now )) , $((($now - $ts) <= $TTL ))
 	if (( $ts <= $now && ($now - $ts) <= $TTL )); then
 		if cat $SPOKEN | grep -q "\b$ts\b"; then
 			echo "SEEN: ts=$ts now=$now txt=$txt" >&2
