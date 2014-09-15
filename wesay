@@ -1,0 +1,34 @@
+source ./common
+
+SERVER=
+
+function cleanup {
+	if "$SERVER"; then
+		kill -KILL $SERVER
+	fi	
+}
+
+echo "WARNING: everything you write is committed to a public repo. Also, this script utilizes git so make sure your working directory is clean (^C to exit)."
+
+echo "> Starting server..."
+./wesay-server&
+SERVER="$!"
+
+while true; do
+	read -p "We should say: " msg
+	echo "> Scheduling message..."
+
+	git stash
+
+	let -i now=$(get_time)
+	let -i ts=$((now + PAUSE))
+	
+	echo "$ts $msg" >> message
+
+	git add message
+	git commit -m "Automatic message commit"
+	yes y | git push
+
+	git stash pop
+	echo "> Scheduled!"
+done

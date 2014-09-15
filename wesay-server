@@ -1,0 +1,39 @@
+#!/bin/bash
+
+source ./common
+
+MSG=https://raw.githubusercontent.com/brandondiamond/wesay/master/message
+SPOKEN=""
+
+
+get_msgs() {
+	curl "$MSG?$RANDOM" 2> /dev/null;
+}
+
+do_msg() {
+	let -i ts=$1;
+	let -i now=$(get_time);
+	let txt="${*:2}";
+
+
+	if (( $ts <= $now && ($now - $ts) <= $TTL )); then
+		if echo "$SPOKEN" | grep -s "\b$ts\b"; then
+			SPOKEN="$SPOKEN $ts";
+			echo "> Saying message, ts=$ts now=$now txt=$txt"
+			echo SAY $txt;
+		else
+			echo "SEEN: ts=$ts now=$now txt=$txt" >&2
+		fi
+	else
+		echo "OLD: ts=$ts now=$now txt=$txt" >&2
+	fi
+}
+
+echo "> Server started!"
+
+while true; do
+	get_msgs | while read -r line; do
+		do_msg $line
+	done
+	sleep 0.5
+done
