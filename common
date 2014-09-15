@@ -1,8 +1,8 @@
 #!/bin/bash
 
 TIME=http://date.jsontest.com/
-TTL=100000 # poll is 500ms
-PAUSE=100
+TTL=1000 # poll is 500ms
+PAUSE=3000
 
 get_time() { 
 	curl "$TIME" 2> /dev/null | grep 'milliseconds_since_epoch' | sed -e 's/[^0-9]//g'

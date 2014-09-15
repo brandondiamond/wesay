@@ -3,24 +3,23 @@
 source ./common
 
 MSG=https://raw.githubusercontent.com/brandondiamond/wesay/master/message
-SPOKEN=""
+SPOKEN="/tmp/$$.wesay.log"
 
-
-get_msgs() {
+function get_msgs {
 	curl "$MSG?$RANDOM" 2> /dev/null;
 }
 
-do_msg() {
+function do_msg {
 	let -i ts=$1;
 	let -i now=$(get_time);
 	
 	txt="${*:2}";
 
 	if (( $ts <= $now && ($now - $ts) <= $TTL )); then
-		if echo "$SPOKEN" | grep -q "\b$ts\b"; then
+		if cat $SPOKEN | grep -q "\b$ts\b"; then
 			echo "SEEN: ts=$ts now=$now txt=$txt" >&2
 		else
-			SPOKEN="$SPOKEN $ts";
+			echo $ts >> $SPOKEN
 			echo "> SAY: ts=$ts now=$now txt=$txt" >&2
 			say "$txt";
 		fi
@@ -28,6 +27,8 @@ do_msg() {
 		echo "OLD: ts=$ts now=$now txt=$txt" >&2
 	fi
 }
+
+touch $SPOKEN
 
 while true; do
 	get_msgs | while read -r line; do
