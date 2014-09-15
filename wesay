@@ -18,9 +18,9 @@ echo "WARNING: everything you write is committed to a public repo. Also, this sc
 echo "> Starting server..."
 
 if (( $DEBUG )); then
-	./wesay-server 2>/dev/null &
-else
 	./wesay-server &
+else
+	./wesay-server 2> /dev/null &
 fi
 
 SERVER="$!"
