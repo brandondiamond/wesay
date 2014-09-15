@@ -30,8 +30,6 @@ while true; do
 	read -p "say> " msg
 	echo "> Scheduling message..."
 
-	git stash > /dev/null 2>&1
-
 	let -i now=$(get_time)
 	let -i ts=$((now + PAUSE))
 	
@@ -41,6 +39,5 @@ while true; do
 	git commit -m "Automatic message commit" > /dev/null 2>&1
 	yes y | git push > /dev/null 2>&1
 
-	git stash pop > /dev/null 2>&1
 	echo "> Scheduled!"
 done
