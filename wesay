@@ -3,32 +3,38 @@ source ./common
 SERVER=
 
 function cleanup {
-	if "$SERVER"; then
-		kill -KILL $SERVER
-	fi	
+	# hideous but i'll fix this later
+	kill -KILL $(ps aux | grep wesay-server | tr -s ' ' | cut -d' ' -f2) > /dev/null 2>&1
+	
+	#if "$SERVER"; then
+	#	kill -KILL $SERVER
+	#fi	
 }
+
+trap cleanup EXIT
 
 echo "WARNING: everything you write is committed to a public repo. Also, this script utilizes git so make sure your working directory is clean (^C to exit)."
 
 echo "> Starting server..."
-./wesay-server&
+./wesay-server 2>/dev/null &
 SERVER="$!"
+echo "> Started ($SERVER)"
 
 while true; do
-	read -p "We should say: " msg
+	read -p "say> " msg
 	echo "> Scheduling message..."
 
-	git stash
+	git stash > /dev/null 2>&1
 
 	let -i now=$(get_time)
 	let -i ts=$((now + PAUSE))
 	
 	echo "$ts $msg" >> message
 
-	git add message
-	git commit -m "Automatic message commit"
-	yes y | git push
+	git add message > /dev/null 2>&1
+	git commit -m "Automatic message commit" > /dev/null 2>&1
+	yes y | git push > /dev/null 2>&1
 
-	git stash pop
+	git stash pop > /dev/null 2>&1
 	echo "> Scheduled!"
 done
