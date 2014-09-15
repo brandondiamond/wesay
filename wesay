@@ -16,7 +16,13 @@ trap cleanup EXIT
 echo "WARNING: everything you write is committed to a public repo. Also, this script utilizes git so make sure your working directory is clean (^C to exit)."
 
 echo "> Starting server..."
-./wesay-server 2>/dev/null &
+
+if (( $DEBUG )); then
+	./wesay-server 2>/dev/null &
+else
+	./wesay-server &
+fi
+
 SERVER="$!"
 echo "> Started ($SERVER)"
 
